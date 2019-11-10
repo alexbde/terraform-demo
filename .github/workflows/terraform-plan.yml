@@ -12,6 +12,7 @@ jobs:
       TF_ACTION_WORKING_DIR: .
       TF_ACTION_CACHE_DIR: .actions-cache
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TF_LOG: TRACE
     steps:
       - name: Checkout git repository
         uses: actions/checkout@master
@@ -24,8 +25,6 @@ jobs:
           tf_actions_comment: true
       - name: Terraform initialize
         uses: hashicorp/terraform-github-actions@v0.6.0
-        env:
-          TF_LOG: TRACE
         with:
           tf_actions_version: ${{ env.TF_VERSION }}
           tf_actions_subcommand: 'init'
