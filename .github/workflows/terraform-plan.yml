@@ -16,21 +16,21 @@ jobs:
       - name: Checkout git repository
         uses: actions/checkout@master
       - name: Terraform format
-        uses: hashicorp/terraform-github-actions@v0.5.4
+        uses: hashicorp/terraform-github-actions@v0.6.0
         with:
           tf_actions_version: ${{ env.TF_VERSION }}
           tf_actions_subcommand: 'fmt'
           tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
           tf_actions_comment: true
       - name: Terraform initialize
-        uses: hashicorp/terraform-github-actions@v0.5.4
+        uses: hashicorp/terraform-github-actions@v0.6.0
         with:
           tf_actions_version: ${{ env.TF_VERSION }}
           tf_actions_subcommand: 'init'
           tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
           tf_actions_comment: true
       - name: Terraform validate
-        uses: hashicorp/terraform-github-actions@v0.5.4
+        uses: hashicorp/terraform-github-actions@v0.6.0
         with:
           tf_actions_version: ${{ env.TF_VERSION }}
           tf_actions_subcommand: 'validate'
@@ -45,7 +45,7 @@ jobs:
         if: steps.cache-primes.outputs.cache-hit != 'true'
         run: mkdir -p ${{ env.TF_ACTION_CACHE_DIR }}
       - name: Terraform plan
-        uses: hashicorp/terraform-github-actions@v0.5.4
+        uses: hashicorp/terraform-github-actions@v0.6.0
         env:
           TF_CLI_ARGS_plan: -out /github/workspace/${{ env.TF_ACTION_CACHE_DIR }}/${{ github.event.pull_request.head.sha }}.tfplan
         with:
