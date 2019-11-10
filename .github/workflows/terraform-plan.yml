@@ -1,0 +1,55 @@
+name: Terraform plan
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  terraform-plan:
+    name: Terraform plan
+    runs-on: ubuntu-latest
+    env:
+      TF_VERSION: 0.12.13
+      TF_ACTION_WORKING_DIR: .
+      TF_ACTION_CACHE_DIR: .actions-cache
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout git repository
+        uses: actions/checkout@master
+      - name: Terraform format
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.TF_VERSION }}
+          tf_actions_subcommand: 'fmt'
+          tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
+          tf_actions_comment: true
+      - name: Terraform initialize
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.TF_VERSION }}
+          tf_actions_subcommand: 'init'
+          tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
+          tf_actions_comment: true
+      - name: Terraform validate
+        uses: hashicorp/terraform-github-actions@master
+        with:
+          tf_actions_version: ${{ env.TF_VERSION }}
+          tf_actions_subcommand: 'validate'
+          tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
+          tf_actions_comment: true
+      - name: Initialize terraform plan cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ env.TF_ACTION_CACHE_DIR }}
+          key: terraform-pr-${{ github.event.number }}-commit-${{ github.event.pull_request.head.sha }}
+      - name: Create terraform plan cache directory
+        if: steps.cache-primes.outputs.cache-hit != 'true'
+        run: mkdir -p ${{ env.TF_ACTION_CACHE_DIR }}
+      - name: Terraform plan
+        uses: hashicorp/terraform-github-actions@master
+        env:
+          TF_CLI_ARGS_plan: -out /github/workspace/${{ env.TF_ACTION_CACHE_DIR }}/${{ github.event.pull_request.head.sha }}.tfplan
+        with:
+          tf_actions_version: ${{ env.TF_VERSION }}
+          tf_actions_subcommand: 'plan'
+          tf_actions_working_dir: ${{ env.TF_ACTION_WORKING_DIR }}
+          tf_actions_comment: true
