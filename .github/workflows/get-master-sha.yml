@@ -19,10 +19,15 @@ jobs:
           script: |
             try {
               console.log('context.repo', context.repo);
-              const { data: data } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
-              console.log('data', data);
+              const { data: master } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
+              console.log('data', master);
               const { data: { commit: { sha: sha } } } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
               console.log('master.commit.sha=', sha);
+              if ("${{ github.event.pull_request.base.sha }}" != master.commit.sha) {
+                console.log('no equal')
+              } else {
+                console.log('equal')
+              }
             } catch (e) {
               console.error('Error: ', e)
             }
