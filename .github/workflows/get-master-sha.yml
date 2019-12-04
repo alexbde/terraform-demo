@@ -1,0 +1,27 @@
+name: Get master sha
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  get-master-sha:
+    name: Get master sha
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+#      - name: Checkout git repository
+#        uses: actions/checkout@master
+      - name: Get master sha
+        uses: actions/github-script@0.3.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              console.log(context);
+              console.log(context.repo);
+              const { data: master } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
+              console.log('master.commit.sha=', master.commit.sha);
+            } catch (e) {
+              console.error('Error creating comment: ', e)
+            }
