@@ -20,8 +20,8 @@ jobs:
             try {
               console.log(context);
               console.log(context.repo);
-              const { data: master } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
-              console.log('master.commit.sha=', master.commit.sha);
+              const { data.commit.sha: sha } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
+              console.log('master.commit.sha=', sha);
             } catch (e) {
               console.error('Error creating comment: ', e)
             }
