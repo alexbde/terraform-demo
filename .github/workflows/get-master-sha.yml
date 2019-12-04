@@ -18,10 +18,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             try {
-              console.log(context);
-              console.log(context.repo);
-              const { data: [{ commit: [{ sha: sha }] }] } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
+              console.log('context.repo', context.repo);
+              const { data: data } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
+              console.log('data', data);
+              const { data: { commit: { sha: sha } } } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
               console.log('master.commit.sha=', sha);
             } catch (e) {
-              console.error('Error creating comment: ', e)
+              console.error('Error: ', e)
             }
