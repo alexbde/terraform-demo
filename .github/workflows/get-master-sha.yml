@@ -1,0 +1,33 @@
+name: Get master sha
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  get-master-sha:
+    name: Get master sha
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+#      - name: Checkout git repository
+#        uses: actions/checkout@master
+      - name: Get master sha
+        uses: actions/github-script@0.3.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              console.log('context.repo', context.repo);
+              const { data: master } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
+              console.log('data', master);
+              const { data: { commit: { sha: sha } } } = await github.repos.getBranch({ ...context.repo, branch: 'master' });
+              console.log('master.commit.sha=', sha);
+              if ("${{ github.event.pull_request.base.sha }}" != master.commit.sha) {
+                console.log('no equal')
+              } else {
+                console.log('equal')
+              }
+            } catch (e) {
+              console.error('Error: ', e)
+            }
