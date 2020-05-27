@@ -1,0 +1,23 @@
+name: Test if always && ...
+on:
+  pull_request:
+    branches:
+      - master
+jobs:
+  test-1:
+    name: Test Case 1
+    runs-on: ubuntu-latest
+    env:
+      TEST: some-value
+      INCLUDE_TEST_1: ${{ env.TEST }}
+      INCLUDE_TEST_2: this and ${{ env.TEST }} and that
+    steps:
+      - name: Checkout git repository
+        uses: actions/checkout@master
+      - name: Remove label
+        if: always() && contains(github.event.pull_request.labels.*.name, 'some-non-existing-label')
+        uses: actions/github-script@0.3.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.issues.removeLabel({...context.issue, name: 'some-non-existing-label'})
